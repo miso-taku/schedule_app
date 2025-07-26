@@ -1,8 +1,7 @@
-"""Concrete implementations of schedule management interfaces.
+"""スケジュール管理インターフェースの具体的実装。
 
-This module contains the concrete implementations of the repository and service
-interfaces, as well as the SQLAlchemy database models.
-"""
+このモジュールはリポジトリとサービスインターフェースの
+具体的実装、およびSQLAlchemyデータベースモデルを含んでいます。"""
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,19 +24,19 @@ Base = declarative_base()
 
 
 class Schedule(Base):
-    """SQLAlchemy model for the schedules table.
+    """schedulesテーブル用のSQLAlchemyモデル。
     
-    This model represents a schedule record in the database.
+    このモデルはデータベース内のスケジュールレコードを表します。
     
-    Attributes:
-        id: Primary key identifier.
-        title: Title of the schedule.
-        description: Optional description of the schedule.
-        start_time: Start time of the schedule.
-        end_time: End time of the schedule.
-        is_completed: Whether the schedule is completed.
-        created_at: Timestamp when the schedule was created.
-        updated_at: Timestamp when the schedule was last updated.
+    属性:
+        id: 主キー識別子。
+        title: スケジュールのタイトル。
+        description: スケジュールのオプション説明。
+        start_time: スケジュールの開始時刻。
+        end_time: スケジュールの終了時刻。
+        is_completed: スケジュールが完了しているかどうか。
+        created_at: スケジュールが作成されたタイムスタンプ。
+        updated_at: スケジュールが最後に更新されたタイムスタンプ。
     """
     __tablename__ = "schedules"
     
@@ -52,31 +51,31 @@ class Schedule(Base):
 
 
 class ScheduleRepository(ScheduleRepositoryInterface):
-    """Concrete implementation of the schedule repository interface.
+    """スケジュールリポジトリインターフェースの具体的実装。
     
-    This class provides data persistence operations for schedules using SQLAlchemy.
+    このクラスはSQLAlchemyを使用してスケジュールのデータ永続化操作を提供します。
     """
     
     def __init__(self):
-        """Initialize the repository and create database tables."""
+        """リポジトリを初期化し、データベーステーブルを作成します。"""
         Base.metadata.create_all(bind=engine)
 
     def _get_db(self) -> Session:
-        """Get a database session.
+        """データベースセッションを取得します。
         
-        Returns:
-            A SQLAlchemy database session.
+        戻り値:
+            SQLAlchemyデータベースセッション。
         """
         return SessionLocal()
 
     def create(self, schedule_data: ScheduleCreate) -> ScheduleResponse:
-        """Create a new schedule in the database.
+        """データベースに新しいスケジュールを作成します。
         
-        Args:
-            schedule_data: The schedule data to create.
+        引数:
+            schedule_data: 作成するスケジュールデータ。
             
-        Returns:
-            The created schedule response.
+        戻り値:
+            作成されたスケジュールレスポンス。
         """
         db = self._get_db()
         try:
@@ -89,13 +88,13 @@ class ScheduleRepository(ScheduleRepositoryInterface):
             db.close()
 
     def get_by_id(self, schedule_id: int) -> Optional[ScheduleResponse]:
-        """Retrieve a schedule by its ID from the database.
+        """データベースからIDによってスケジュールを取得します。
         
-        Args:
-            schedule_id: The ID of the schedule to retrieve.
+        引数:
+            schedule_id: 取得するスケジュールのID。
             
-        Returns:
-            The schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合はスケジュールレスポンス、そうでなければNone。
         """
         db = self._get_db()
         try:
@@ -107,14 +106,14 @@ class ScheduleRepository(ScheduleRepositoryInterface):
             db.close()
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[ScheduleResponse]:
-        """Retrieve all schedules with pagination from the database.
+        """データベースからページネーション付きですべてのスケジュールを取得します。
         
-        Args:
-            skip: Number of schedules to skip.
-            limit: Maximum number of schedules to return.
+        引数:
+            skip: スキップするスケジュール数。
+            limit: 返すスケジュールの最大数。
             
-        Returns:
-            List of schedule responses.
+        戻り値:
+            スケジュールレスポンスのリスト。
         """
         db = self._get_db()
         try:
@@ -124,14 +123,14 @@ class ScheduleRepository(ScheduleRepositoryInterface):
             db.close()
 
     def update(self, schedule_id: int, update_data: ScheduleUpdate) -> Optional[ScheduleResponse]:
-        """Update an existing schedule in the database.
+        """データベース内の既存のスケジュールを更新します。
         
-        Args:
-            schedule_id: The ID of the schedule to update.
-            update_data: The update data.
+        引数:
+            schedule_id: 更新するスケジュールのID。
+            update_data: 更新データ。
             
-        Returns:
-            The updated schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合は更新されたスケジュールレスポンス、そうでなければNone。
         """
         db = self._get_db()
         try:
@@ -151,13 +150,13 @@ class ScheduleRepository(ScheduleRepositoryInterface):
             db.close()
 
     def delete(self, schedule_id: int) -> bool:
-        """Delete a schedule from the database.
+        """データベースからスケジュールを削除します。
         
-        Args:
-            schedule_id: The ID of the schedule to delete.
+        引数:
+            schedule_id: 削除するスケジュールのID。
             
-        Returns:
-            True if the schedule was deleted, False if not found.
+        戻り値:
+            スケジュールが削除された場合はTrue、見つからない場合はFalse。
         """
         db = self._get_db()
         try:
@@ -173,86 +172,86 @@ class ScheduleRepository(ScheduleRepositoryInterface):
 
 
 class ScheduleService(ScheduleServiceInterface):
-    """Concrete implementation of the schedule service interface.
+    """スケジュールサービスインターフェースの具体的実装。
     
-    This class provides business logic operations for schedules.
-    It acts as a facade over the repository layer.
+    このクラスはスケジュールのビジネスロジック操作を提供します。
+    リポジトリ層に対するファサードとして機能します。
     """
     
     def __init__(self, repository: ScheduleRepositoryInterface):
-        """Initialize the service with a repository.
+        """リポジトリでサービスを初期化します。
         
-        Args:
-            repository: The schedule repository implementation.
+        引数:
+            repository: スケジュールリポジトリの実装。
         """
         self.repository = repository
 
     def create_schedule(self, schedule_data: ScheduleCreate) -> ScheduleResponse:
-        """Create a new schedule.
+        """新しいスケジュールを作成します。
         
-        Args:
-            schedule_data: The schedule data to create.
+        引数:
+            schedule_data: 作成するスケジュールデータ。
             
-        Returns:
-            The created schedule response.
+        戻り値:
+            作成されたスケジュールレスポンス。
         """
         return self.repository.create(schedule_data)
 
     def get_schedule(self, schedule_id: int) -> Optional[ScheduleResponse]:
-        """Retrieve a schedule by its ID.
+        """IDによってスケジュールを取得します。
         
-        Args:
-            schedule_id: The ID of the schedule to retrieve.
+        引数:
+            schedule_id: 取得するスケジュールのID。
             
-        Returns:
-            The schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合はスケジュールレスポンス、そうでなければNone。
         """
         return self.repository.get_by_id(schedule_id)
 
     def get_schedules(self, skip: int = 0, limit: int = 100) -> List[ScheduleResponse]:
-        """Retrieve all schedules with pagination.
+        """ページネーション付きですべてのスケジュールを取得します。
         
-        Args:
-            skip: Number of schedules to skip.
-            limit: Maximum number of schedules to return.
+        引数:
+            skip: スキップするスケジュール数。
+            limit: 返すスケジュールの最大数。
             
-        Returns:
-            List of schedule responses.
+        戻り値:
+            スケジュールレスポンスのリスト。
         """
         return self.repository.get_all(skip, limit)
 
     def update_schedule(self, schedule_id: int, update_data: ScheduleUpdate) -> Optional[ScheduleResponse]:
-        """Update an existing schedule.
+        """既存のスケジュールを更新します。
         
-        Args:
-            schedule_id: The ID of the schedule to update.
-            update_data: The update data.
+        引数:
+            schedule_id: 更新するスケジュールのID。
+            update_data: 更新データ。
             
-        Returns:
-            The updated schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合は更新されたスケジュールレスポンス、そうでなければNone。
         """
         return self.repository.update(schedule_id, update_data)
 
     def delete_schedule(self, schedule_id: int) -> bool:
-        """Delete a schedule by its ID.
+        """IDによってスケジュールを削除します。
         
-        Args:
-            schedule_id: The ID of the schedule to delete.
+        引数:
+            schedule_id: 削除するスケジュールのID。
             
-        Returns:
-            True if the schedule was deleted, False if not found.
+        戻り値:
+            スケジュールが削除された場合はTrue、見つからない場合はFalse。
         """
         return self.repository.delete(schedule_id)
 
 
 def get_db():
-    """Dependency function to get a database session.
+    """データベースセッションを取得する依存関数。
     
-    This function is used as a FastAPI dependency to provide
-    database sessions to endpoints.
+    この関数はFastAPIの依存関数として使用され、
+    エンドポイントにデータベースセッションを提供します。
     
-    Yields:
-        A SQLAlchemy database session.
+    戻り値:
+        SQLAlchemyデータベースセッション。
     """
     db = SessionLocal()
     try:
@@ -262,12 +261,12 @@ def get_db():
 
 
 def create_schedule_service() -> ScheduleService:
-    """Factory function to create a schedule service instance.
+    """スケジュールサービスインスタンスを作成するファクトリ関数。
     
-    Creates a schedule service with a repository implementation.
+    リポジトリ実装を持つスケジュールサービスを作成します。
     
-    Returns:
-        A configured schedule service instance.
+    戻り値:
+        設定されたスケジュールサービスインスタンス。
     """
     repository = ScheduleRepository()
     return ScheduleService(repository)
