@@ -1,7 +1,7 @@
-"""Main FastAPI application for the schedule management system.
+"""スケジュール管理システムのメインFastAPIアプリケーション。
 
-This module contains the FastAPI application and API endpoints for
-managing schedules. It serves as the entry point for the application.
+このモジュールはスケジュール管理用のFastAPIアプリケーションと
+APIエンドポイントを含んでいます。アプリケーションのエントリポイントとして機能します。
 """
 
 from fastapi import FastAPI, HTTPException
@@ -16,53 +16,53 @@ schedule_service = create_schedule_service()
 
 @app.get("/")
 def read_root():
-    """Root endpoint that returns a welcome message.
+    """ウェルカムメッセージを返すルートエンドポイント。
     
-    Returns:
-        A dictionary containing a welcome message.
+    戻り値:
+        ウェルカムメッセージを含む辞書。
     """
     return {"message": "Schedule Management API"}
 
 
 @app.post("/schedules/", response_model=ScheduleResponse)
 def create_schedule(schedule: ScheduleCreate):
-    """Create a new schedule.
+    """新しいスケジュールを作成します。
     
-    Args:
-        schedule: The schedule data to create.
+    引数:
+        schedule: 作成するスケジュールデータ。
         
-    Returns:
-        The created schedule response.
+    戻り値:
+        作成されたスケジュールレスポンス。
     """
     return schedule_service.create_schedule(schedule)
 
 
 @app.get("/schedules/", response_model=List[ScheduleResponse])
 def read_schedules(skip: int = 0, limit: int = 100):
-    """Retrieve all schedules with pagination.
+    """ページネーション付きですべてのスケジュールを取得します。
     
-    Args:
-        skip: Number of schedules to skip for pagination.
-        limit: Maximum number of schedules to return.
+    引数:
+        skip: ページネーション用にスキップするスケジュール数。
+        limit: 返すスケジュールの最大数。
         
-    Returns:
-        List of schedule responses.
+    戻り値:
+        スケジュールレスポンスのリスト。
     """
     return schedule_service.get_schedules(skip, limit)
 
 
 @app.get("/schedules/{schedule_id}", response_model=ScheduleResponse)
 def read_schedule(schedule_id: int):
-    """Retrieve a specific schedule by its ID.
+    """IDによって特定のスケジュールを取得します。
     
-    Args:
-        schedule_id: The ID of the schedule to retrieve.
+    引数:
+        schedule_id: 取得するスケジュールのID。
         
-    Returns:
-        The schedule response.
+    戻り値:
+        スケジュールレスポンス。
         
-    Raises:
-        HTTPException: If the schedule is not found (404).
+    例外:
+        HTTPException: スケジュールが見つからない場合 (404)。
     """
     schedule = schedule_service.get_schedule(schedule_id)
     if schedule is None:
@@ -72,17 +72,17 @@ def read_schedule(schedule_id: int):
 
 @app.put("/schedules/{schedule_id}", response_model=ScheduleResponse)
 def update_schedule(schedule_id: int, schedule_update: ScheduleUpdate):
-    """Update an existing schedule.
+    """既存のスケジュールを更新します。
     
-    Args:
-        schedule_id: The ID of the schedule to update.
-        schedule_update: The update data.
+    引数:
+        schedule_id: 更新するスケジュールのID。
+        schedule_update: 更新データ。
         
-    Returns:
-        The updated schedule response.
+    戻り値:
+        更新されたスケジュールレスポンス。
         
-    Raises:
-        HTTPException: If the schedule is not found (404).
+    例外:
+        HTTPException: スケジュールが見つからない場合 (404)。
     """
     schedule = schedule_service.update_schedule(schedule_id, schedule_update)
     if schedule is None:
@@ -92,16 +92,16 @@ def update_schedule(schedule_id: int, schedule_update: ScheduleUpdate):
 
 @app.delete("/schedules/{schedule_id}")
 def delete_schedule(schedule_id: int):
-    """Delete a schedule by its ID.
+    """IDによってスケジュールを削除します。
     
-    Args:
-        schedule_id: The ID of the schedule to delete.
+    引数:
+        schedule_id: 削除するスケジュールのID。
         
-    Returns:
-        A success message.
+    戻り値:
+        成功メッセージ。
         
-    Raises:
-        HTTPException: If the schedule is not found (404).
+    例外:
+        HTTPException: スケジュールが見つからない場合 (404)。
     """
     success = schedule_service.delete_schedule(schedule_id)
     if not success:
@@ -110,10 +110,10 @@ def delete_schedule(schedule_id: int):
 
 
 if __name__ == "__main__":
-    """Run the FastAPI application with uvicorn server.
+    """uvicornサーバーでFastAPIアプリケーションを実行します。
     
-    This block is executed when the script is run directly.
-    It starts the uvicorn server on all interfaces (0.0.0.0) at port 8000.
+    このブロックはスクリプトが直接実行されたときに実行されます。
+    すべてのインターフェース (0.0.0.0) のポート 8000 でuvicornサーバーを起動します。
     """
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

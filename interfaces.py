@@ -1,7 +1,7 @@
-"""Interfaces and data models for the schedule management application.
+"""スケジュール管理アプリケーションのインターフェースとデータモデル。
 
-This module defines the abstract interfaces and Pydantic models used
-throughout the schedule management system.
+このモジュールはスケジュール管理システム全体で使用される
+抽象インターフェースとPydanticモデルを定義しています。
 """
 
 from abc import ABC, abstractmethod
@@ -11,13 +11,13 @@ from pydantic import BaseModel
 
 
 class ScheduleCreate(BaseModel):
-    """Pydantic model for creating a new schedule.
+    """新しいスケジュールを作成するためのPydanticモデル。
     
-    Attributes:
-        title: The title of the schedule.
-        description: Optional description of the schedule.
-        start_time: The start time of the schedule.
-        end_time: The end time of the schedule.
+    属性:
+        title: スケジュールのタイトル。
+        description: スケジュールの説明（オプション）。
+        start_time: スケジュールの開始時刻。
+        end_time: スケジュールの終了時刻。
     """
     title: str
     description: Optional[str] = None
@@ -26,16 +26,16 @@ class ScheduleCreate(BaseModel):
 
 
 class ScheduleUpdate(BaseModel):
-    """Pydantic model for updating an existing schedule.
+    """既存のスケジュールを更新するためのPydanticモデル。
     
-    All fields are optional to allow partial updates.
+    部分的な更新を可能にするため、すべてのフィールドはオプションです。
     
-    Attributes:
-        title: The new title of the schedule.
-        description: The new description of the schedule.
-        start_time: The new start time of the schedule.
-        end_time: The new end time of the schedule.
-        is_completed: Whether the schedule is completed.
+    属性:
+        title: スケジュールの新しいタイトル。
+        description: スケジュールの新しい説明。
+        start_time: スケジュールの新しい開始時刻。
+        end_time: スケジュールの新しい終了時刻。
+        is_completed: スケジュールが完了しているかどうか。
     """
     title: Optional[str] = None
     description: Optional[str] = None
@@ -45,19 +45,19 @@ class ScheduleUpdate(BaseModel):
 
 
 class ScheduleResponse(BaseModel):
-    """Pydantic model for schedule responses.
+    """スケジュールレスポンス用のPydanticモデル。
     
-    This model represents a complete schedule with all fields.
+    このモデルはすべてのフィールドを持つ完全なスケジュールを表します。
     
-    Attributes:
-        id: The unique identifier of the schedule.
-        title: The title of the schedule.
-        description: The description of the schedule.
-        start_time: The start time of the schedule.
-        end_time: The end time of the schedule.
-        is_completed: Whether the schedule is completed.
-        created_at: When the schedule was created.
-        updated_at: When the schedule was last updated.
+    属性:
+        id: スケジュールの一意識別子。
+        title: スケジュールのタイトル。
+        description: スケジュールの説明。
+        start_time: スケジュールの開始時刻。
+        end_time: スケジュールの終了時刻。
+        is_completed: スケジュールが完了しているかどうか。
+        created_at: スケジュールが作成された日時。
+        updated_at: スケジュールが最後に更新された日時。
     """
     id: int
     title: str
@@ -73,140 +73,140 @@ class ScheduleResponse(BaseModel):
 
 
 class ScheduleRepositoryInterface(ABC):
-    """Abstract interface for schedule data persistence operations.
+    """スケジュールデータの永続化操作のための抽象インターフェース。
     
-    This interface defines the methods required for managing schedule data
-    in a persistent storage system.
+    このインターフェースは永続ストレージシステムでスケジュールデータを
+    管理するために必要なメソッドを定義します。
     """
     
     @abstractmethod
     def create(self, schedule_data: ScheduleCreate) -> ScheduleResponse:
-        """Create a new schedule in the repository.
+        """リポジトリに新しいスケジュールを作成します。
         
-        Args:
-            schedule_data: The schedule data to create.
+        引数:
+            schedule_data: 作成するスケジュールデータ。
             
-        Returns:
-            The created schedule response.
+        戻り値:
+            作成されたスケジュールレスポンス。
         """
         pass
 
     @abstractmethod
     def get_by_id(self, schedule_id: int) -> Optional[ScheduleResponse]:
-        """Retrieve a schedule by its ID.
+        """IDによってスケジュールを取得します。
         
-        Args:
-            schedule_id: The ID of the schedule to retrieve.
+        引数:
+            schedule_id: 取得するスケジュールのID。
             
-        Returns:
-            The schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合はスケジュールレスポンス、そうでなければNone。
         """
         pass
 
     @abstractmethod
     def get_all(self, skip: int = 0, limit: int = 100) -> List[ScheduleResponse]:
-        """Retrieve all schedules with pagination.
+        """ページネーション付きですべてのスケジュールを取得します。
         
-        Args:
-            skip: Number of schedules to skip.
-            limit: Maximum number of schedules to return.
+        引数:
+            skip: スキップするスケジュール数。
+            limit: 返すスケジュールの最大数。
             
-        Returns:
-            List of schedule responses.
+        戻り値:
+            スケジュールレスポンスのリスト。
         """
         pass
 
     @abstractmethod
     def update(self, schedule_id: int, update_data: ScheduleUpdate) -> Optional[ScheduleResponse]:
-        """Update an existing schedule.
+        """既存のスケジュールを更新します。
         
-        Args:
-            schedule_id: The ID of the schedule to update.
-            update_data: The update data.
+        引数:
+            schedule_id: 更新するスケジュールのID。
+            update_data: 更新データ。
             
-        Returns:
-            The updated schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合は更新されたスケジュールレスポンス、そうでなければNone。
         """
         pass
 
     @abstractmethod
     def delete(self, schedule_id: int) -> bool:
-        """Delete a schedule by its ID.
+        """IDによってスケジュールを削除します。
         
-        Args:
-            schedule_id: The ID of the schedule to delete.
+        引数:
+            schedule_id: 削除するスケジュールのID。
             
-        Returns:
-            True if the schedule was deleted, False if not found.
+        戻り値:
+            スケジュールが削除された場合はTrue、見つからなかった場合はFalse。
         """
         pass
 
 
 class ScheduleServiceInterface(ABC):
-    """Abstract interface for schedule business logic operations.
+    """スケジュールビジネスロジック操作のための抽象インターフェース。
     
-    This interface defines the business logic methods for managing schedules.
-    It acts as a facade over the repository layer.
+    このインターフェースはスケジュール管理のためのビジネスロジックメソッドを定義します。
+    リポジトリ層のファサードとして機能します。
     """
     
     @abstractmethod
     def create_schedule(self, schedule_data: ScheduleCreate) -> ScheduleResponse:
-        """Create a new schedule.
+        """新しいスケジュールを作成します。
         
-        Args:
-            schedule_data: The schedule data to create.
+        引数:
+            schedule_data: 作成するスケジュールデータ。
             
-        Returns:
-            The created schedule response.
+        戻り値:
+            作成されたスケジュールレスポンス。
         """
         pass
 
     @abstractmethod
     def get_schedule(self, schedule_id: int) -> Optional[ScheduleResponse]:
-        """Retrieve a schedule by its ID.
+        """IDによってスケジュールを取得します。
         
-        Args:
-            schedule_id: The ID of the schedule to retrieve.
+        引数:
+            schedule_id: 取得するスケジュールのID。
             
-        Returns:
-            The schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合はスケジュールレスポンス、そうでなければNone。
         """
         pass
 
     @abstractmethod
     def get_schedules(self, skip: int = 0, limit: int = 100) -> List[ScheduleResponse]:
-        """Retrieve all schedules with pagination.
+        """ページネーション付きですべてのスケジュールを取得します。
         
-        Args:
-            skip: Number of schedules to skip.
-            limit: Maximum number of schedules to return.
+        引数:
+            skip: スキップするスケジュール数。
+            limit: 返すスケジュールの最大数。
             
-        Returns:
-            List of schedule responses.
+        戻り値:
+            スケジュールレスポンスのリスト。
         """
         pass
 
     @abstractmethod
     def update_schedule(self, schedule_id: int, update_data: ScheduleUpdate) -> Optional[ScheduleResponse]:
-        """Update an existing schedule.
+        """既存のスケジュールを更新します。
         
-        Args:
-            schedule_id: The ID of the schedule to update.
-            update_data: The update data.
+        引数:
+            schedule_id: 更新するスケジュールのID。
+            update_data: 更新データ。
             
-        Returns:
-            The updated schedule response if found, None otherwise.
+        戻り値:
+            見つかった場合は更新されたスケジュールレスポンス、そうでなければNone。
         """
         pass
 
     @abstractmethod
     def delete_schedule(self, schedule_id: int) -> bool:
-        """Delete a schedule by its ID.
+        """IDによってスケジュールを削除します。
         
-        Args:
-            schedule_id: The ID of the schedule to delete.
+        引数:
+            schedule_id: 削除するスケジュールのID。
             
-        Returns:
-            True if the schedule was deleted, False if not found.
+        戻り値:
+            スケジュールが削除された場合はTrue、見つからなかった場合はFalse。
         """
         pass
