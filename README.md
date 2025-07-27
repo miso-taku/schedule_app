@@ -11,28 +11,42 @@
 - Swagger UIによる組み込みAPI文書
 - クリーンアーキテクチャの採用（インターフェースと実装の分離）
 - リポジトリパターンによるデータアクセス層の抽象化
-- Googleスタイルのdocstringsによる詳細な文書化
+- 詳細設計書による包括的なドキュメント化
 
 ## アーキテクチャ
 
-このプロジェクトは以下の3つのファイルに分離されたクリーンなアーキテクチャを採用しています：
+このプロジェクトはクリーンアーキテクチャパターンを採用し、以下の4つのレイヤーに分離されています：
 
-### ファイル構成
+### ディレクトリ構成
 
-- **`main.py`**: FastAPIアプリケーションのエントリーポイントとAPIエンドポイント
-- **`interfaces.py`**: データモデル（Pydantic）と抽象インターフェース
-- **`implementations.py`**: SQLAlchemyモデルと具体的な実装クラス
+```
+schedule_app/
+├── presentation/           # プレゼンテーション層
+│   ├── controllers/       # HTTPリクエスト処理
+│   └── routes/           # APIエンドポイント定義
+├── application/           # アプリケーション層
+│   └── services/         # ビジネスロジック
+├── domain/               # ドメイン層
+│   ├── entities/         # エンティティとDTO
+│   └── repositories/     # リポジトリインターフェース
+├── infrastructure/       # インフラストラクチャ層
+│   ├── database/        # データベース設定・モデル
+│   ├── repositories/    # リポジトリ実装
+│   └── dependencies.py  # 依存性注入
+└── docs/                # ドキュメント
+```
 
 ### レイヤー構成
 
 ```
-Presentation Layer (main.py)
-    ↓
-Business Logic Layer (ScheduleService)
-    ↓
-Data Access Layer (ScheduleRepository)
-    ↓
-Data Layer (SQLite Database)
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Presentation  │    │   Application   │    │     Domain      │    │ Infrastructure  │
+│     Layer       │────│     Layer       │────│     Layer       │────│     Layer       │
+│                 │    │                 │    │                 │    │                 │
+│ • Routes        │    │ • Services      │    │ • Entities      │    │ • Database      │
+│ • Controllers   │    │                 │    │ • Repositories  │    │ • Repository    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    │   Implementations│
+                                                                      └─────────────────┘
 ```
 
 ## 要件
@@ -165,20 +179,26 @@ curl -X DELETE "http://localhost:8000/schedules/1"
 
 ### コードの構造
 
-1. **インターフェース層** (`interfaces.py`)
-   - `ScheduleRepositoryInterface`: データアクセス層の抽象インターフェース
-   - `ScheduleServiceInterface`: ビジネスロジック層の抽象インターフェース
-   - Pydanticデータモデル（Create, Update, Response）
+1. **プレゼンテーション層** (`presentation/`)
+   - `routes/schedule_routes.py`: APIエンドポイント定義
+   - `controllers/schedule_controller.py`: HTTPリクエスト処理とレスポンス生成
 
-2. **実装層** (`implementations.py`)
-   - `Schedule`: SQLAlchemyモデル
-   - `ScheduleRepository`: データアクセスの具体実装
-   - `ScheduleService`: ビジネスロジックの具体実装
+2. **アプリケーション層** (`application/`)
+   - `services/schedule_service.py`: ビジネスロジックと抽象インターフェース
 
-3. **プレゼンテーション層** (`main.py`)
-   - FastAPIアプリケーション
-   - HTTPエンドポイント
-   - 依存性注入の設定
+3. **ドメイン層** (`domain/`)
+   - `entities/schedule.py`: Pydanticデータモデル（Create, Update, Response）
+   - `repositories/schedule_repository.py`: リポジトリの抽象インターフェース
+
+4. **インフラストラクチャ層** (`infrastructure/`)
+   - `database/models.py`: SQLAlchemyモデル
+   - `database/connection.py`: データベース接続設定
+   - `repositories/schedule_repository_impl.py`: リポジトリの具体実装
+   - `dependencies.py`: 依存性注入の設定
+
+5. **エントリーポイント** (`main.py`)
+   - FastAPIアプリケーション設定
+   - ルーターの統合
 
 ### 拡張性
 
@@ -215,13 +235,44 @@ uv info
 ### プロジェクト構造
 ```
 schedule_app/
-├── main.py              # FastAPIアプリケーションエントリーポイント
-├── interfaces.py        # データモデルと抽象インターフェース
-├── implementations.py   # SQLAlchemyモデルと実装クラス
-├── README.md           # プロジェクト文書
-├── .gitignore          # Git除外ファイル
-├── pyproject.toml      # uvプロジェクト設定
-└── schedule.db         # SQLiteデータベース（実行時に作成）
+├── main.py                     # FastAPIアプリケーションエントリーポイント
+├── presentation/               # プレゼンテーション層
+│   ├── __init__.py
+│   ├── controllers/
+│   │   ├── __init__.py
+│   │   └── schedule_controller.py
+│   └── routes/
+│       ├── __init__.py
+│       └── schedule_routes.py
+├── application/                # アプリケーション層
+│   ├── __init__.py
+│   └── services/
+│       ├── __init__.py
+│       └── schedule_service.py
+├── domain/                     # ドメイン層
+│   ├── __init__.py
+│   ├── entities/
+│   │   ├── __init__.py
+│   │   └── schedule.py
+│   └── repositories/
+│       ├── __init__.py
+│       └── schedule_repository.py
+├── infrastructure/             # インフラストラクチャ層
+│   ├── __init__.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── connection.py
+│   │   └── models.py
+│   ├── repositories/
+│   │   ├── __init__.py
+│   │   └── schedule_repository_impl.py
+│   └── dependencies.py
+├── docs/                       # ドキュメント
+│   └── 詳細設計書.md
+├── README.md                   # プロジェクト文書
+├── pyproject.toml             # uvプロジェクト設定
+├── uv.lock                    # 依存関係ロックファイル
+└── schedule.db                # SQLiteデータベース（実行時に作成）
 ```
 
 ## ライセンス
